@@ -1,12 +1,18 @@
 <?php
+
 require_once "./modelos/registro.modelo.php";
+
 class ControladorRegistro{
+
+    /*=============================================
+    Registrar Usuario
+    =============================================*/
 
     static public function ctrRegistro(){
 
         if(isset($_POST["registroNombre"])){
 
-            $tabla = "personas";
+            $tabla = "persona";
 
             $datos = array(
                 "pers_nombre" => $_POST["registroNombre"],
@@ -24,23 +30,39 @@ class ControladorRegistro{
 
     }
 
-        
+    /*=============================================
+    Seleccionar Registros
+    =============================================*/
+
+    static public function ctrSeleccionarRegistro(){
+
+        $tabla = "persona";
+
+        $respuesta = ModeloRegistro::mdlSeleccionarRegistro($tabla, null,null);
+
+        return $respuesta;
+    }
+
     /*=============================================
     Ingresar Usuario
     =============================================*/
 
     public function ctrIngreso(){
 
-        if(isset ($_POST["registroNombre"])){
+        if(isset($_POST["ingresoCorreo"])){
 
-            $tabla = "personas";
+           
+
+            $tabla = "persona";
             $item = "pers_correo";
-            $valor = $_POST["registroNombre"];
+            $valor = $_POST["ingresoCorreo"];
 
             $respuesta = ModeloRegistro::mdlSeleccionarRegistro($tabla, $item, $valor);
 
-            if($respuesta["pers_correo"] == $_POST["registroNombre"] && $respuesta["pers_clave"] == $_POST["registroPassword"]){ 
-
+            if($respuesta["pers_correo"] == $_POST["ingresoCorreo"] && $respuesta["pers_clave"] == $_POST["ingresoClave"]){ 
+                
+                session_start();
+                  
                 $_SESSION["validarIngreso"] = "ok";
 
                 echo '<script>
@@ -71,7 +93,29 @@ class ControladorRegistro{
 
     }
 
-    
+     /*=============================================
+    Actualizar Usuario
+    =============================================*/
+
+    public static function ctrActualizar() {
+        if (isset($_POST['actualizarNombre'], $_POST['actualizarTelefono'], $_POST['actualizarCorreo'], $_POST['actualizarClave'])) {
+
+            $tabla = "persona";
+
+            $datos = array(
+                "id" => $_GET["id"], 
+                "nombre" => $_POST["actualizarNombre"],
+                "telefono" => $_POST["actualizarTelefono"],
+                "correo" => $_POST["actualizarCorreo"],
+                "clave" => password_hash($_POST["actualizarClave"], PASSWORD_DEFAULT)
+            );
+
+            $respuesta = ModeloRegistro::mdlActualizarRegistro($tabla, $datos);
+
+            return $respuesta;
+        }
+
+        return null;
+    }
         
 }
-
